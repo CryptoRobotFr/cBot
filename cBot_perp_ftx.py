@@ -64,7 +64,6 @@ class cBot_perp_ftx():
                 dtemp = pd.DataFrame(tempData)
                 nextTime = int(dtemp.iloc[-1][0] + timeInter)
                 allDf.append(dtemp)
-                # print(dtemp.iloc[-1][0])
                 if dtemp.shape[0] < 1:
                     finished = True
             except:
@@ -101,8 +100,7 @@ class cBot_perp_ftx():
         try:
             allBalance = self._session.fetchBalance()
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in get_all_balance", err)
         return allBalance['total']
 
     @authentication_required
@@ -110,8 +108,7 @@ class cBot_perp_ftx():
         try:
             allBalance = self._session.fetchBalance()
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in get_balance_of_one_coin", err)
         try:
             return allBalance['total'][coin]
         except:
@@ -128,8 +125,7 @@ class cBot_perp_ftx():
                 None
             )
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in place_market_order", err)
 
     @authentication_required
     def place_reduce_market_order(self, symbol, side, amount, leverage=1):
@@ -146,8 +142,7 @@ class cBot_perp_ftx():
                 params
             )
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in place_reduce_market_order", err)
 
     @authentication_required
     def place_limit_order(self, symbol, side, amount, price, leverage=1):
@@ -160,8 +155,7 @@ class cBot_perp_ftx():
                 self.convert_price_to_precision(symbol, price)
                 )
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in place_limit_order", err)
 
     @authentication_required
     def place_reduce_limit_order(self, symbol, side, amount, price, leverage=1):
@@ -178,8 +172,7 @@ class cBot_perp_ftx():
                 params
                 )
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in place_reduce_limit_order", err)
 
     @authentication_required
     def place_market_stop_loss(self, symbol, side, amount, price, leverage=1):
@@ -197,8 +190,7 @@ class cBot_perp_ftx():
                 params
                 )
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in place_market_stop_loss", err)
 
     @authentication_required
     def place_market_take_profit(self, symbol, side, amount, price, leverage=1):
@@ -216,32 +208,29 @@ class cBot_perp_ftx():
                 params
                 )
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in place_market_take_profit", err)
+
 
     @authentication_required
     def cancel_all_open_order(self, symbol):
         try:
             return self._session.cancel_all_orders(symbol)
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in cancel_all_open_order", err)
 
     @authentication_required
     def cancel_order_by_id(self, id):
         try:
             return self._session.cancel_order(id)
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in cancel_order_by_id", err)
 
     @authentication_required
     def get_open_order(self, symbol=None):
         try:
             return self._session.fetchOpenOrders(symbol, None, None)
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in get_open_order", err)
 
     @authentication_required
     def get_open_conditionnal_order(self, symbol=None):
@@ -251,16 +240,14 @@ class cBot_perp_ftx():
         try:
             return self._session.fetchOpenOrders(symbol,None,None,params)
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in get_open_conditionnal_order", err)
 
     @authentication_required
     def get_my_trades(self, symbol=None, since=None, limit=1):
         try:
             return self._session.fetch_my_trades(symbol, since, limit)
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in get_my_trades", err)
 
     @authentication_required
     def get_open_position(self,symbol=None):
@@ -268,24 +255,21 @@ class cBot_perp_ftx():
             positions = self._session.fetchPositions(symbol)
             truePositions = []
             for position in positions:
-                if float(position['size']) > 0:
+                if float(position['contracts']) > 0:
                     truePositions.append(position)
             return truePositions
         except BaseException as err:
-            print("An error occured", err)
-            exit()
+            raise TypeError("An error occured in get_open_position", err)
 
     @authentication_required
     def close_all_open_position(self,symbol=None):
         try:
             positions = self._session.fetchPositions(symbol)
             for position in positions:
-                if position['side'] == 'buy':
-                    self.place_reduce_market_order(position['future'], 'sell', position['size'])
-                elif position['side'] == 'sell':
-                    self.place_reduce_market_order(position['future'], 'buy', position['size'])
+                if position['side'] == 'long':
+                    self.place_reduce_market_order(position['symbol'], 'sell', position['contracts'])
+                elif position['side'] == 'short':
+                    self.place_reduce_market_order(position['symbol'], 'buy', position['contracts'])
             return 'Close all positions done'
         except BaseException as err:
-            print("An error occured", err)
-            exit()
-            
+            raise TypeError("An error occured in close_all_open_position", err)

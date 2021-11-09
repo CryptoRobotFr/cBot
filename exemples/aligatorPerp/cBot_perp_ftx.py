@@ -118,9 +118,9 @@ class cBot_perp_ftx():
     def place_market_order(self, symbol, side, amount, leverage=1):
         try:
             return self._session.createOrder(
-                symbol, 
-                'market', 
-                side, 
+                symbol,
+                'market',
+                side,
                 self.convert_amount_to_precision(symbol, amount * leverage),
                 None
             )
@@ -134,9 +134,9 @@ class cBot_perp_ftx():
         }
         try:
             return self._session.createOrder(
-                symbol, 
-                'market', 
-                side, 
+                symbol,
+                'market',
+                side,
                 self.convert_amount_to_precision(symbol, amount * leverage),
                 None,
                 params
@@ -148,10 +148,10 @@ class cBot_perp_ftx():
     def place_limit_order(self, symbol, side, amount, price, leverage=1):
         try:
             return self._session.createOrder(
-                symbol, 
-                'limit', 
-                side, 
-                self.convert_amount_to_precision(symbol, amount * leverage), 
+                symbol,
+                'limit',
+                side,
+                self.convert_amount_to_precision(symbol, amount * leverage),
                 self.convert_price_to_precision(symbol, price)
                 )
         except BaseException as err:
@@ -164,10 +164,10 @@ class cBot_perp_ftx():
         }
         try:
             return self._session.createOrder(
-                symbol, 
-                'limit', 
-                side, 
-                self.convert_amount_to_precision(symbol, amount * leverage), 
+                symbol,
+                'limit',
+                side,
+                self.convert_amount_to_precision(symbol, amount * leverage),
                 self.convert_price_to_precision(symbol, price),
                 params
                 )
@@ -182,10 +182,10 @@ class cBot_perp_ftx():
         }
         try:
             return self._session.createOrder(
-                symbol, 
-                'stop', 
-                side, 
-                self.convert_amount_to_precision(symbol, amount * leverage), 
+                symbol,
+                'stop',
+                side,
+                self.convert_amount_to_precision(symbol, amount * leverage),
                 None,
                 params
                 )
@@ -200,10 +200,10 @@ class cBot_perp_ftx():
         }
         try:
             return self._session.createOrder(
-                symbol, 
-                'takeProfit', 
-                side, 
-                self.convert_amount_to_precision(symbol, amount), 
+                symbol,
+                'takeProfit',
+                side,
+                self.convert_amount_to_precision(symbol, amount),
                 None,
                 params
                 )
@@ -266,9 +266,9 @@ class cBot_perp_ftx():
         try:
             positions = self._session.fetchPositions(symbol)
             for position in positions:
-                if position['side'] == 'long':
+                if position['side'] == 'long' and position['contracts'] > 0:
                     self.place_reduce_market_order(position['symbol'], 'sell', position['contracts'])
-                elif position['side'] == 'short':
+                elif position['side'] == 'short' and position['contracts'] > 0:
                     self.place_reduce_market_order(position['symbol'], 'buy', position['contracts'])
             return 'Close all positions done'
         except BaseException as err:

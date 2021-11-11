@@ -195,7 +195,7 @@ class cBot_perp_ftx():
     @authentication_required
     def place_market_take_profit(self, symbol, side, amount, price, leverage=1):
         params = {
-        'stopPrice': self.convert_price_to_precision(symbol, price * leverage),  # your stop price
+        'stopPrice': self.convert_price_to_precision(symbol, price),  # your stop price
         'reduceOnly':True
         }
         try:
@@ -203,7 +203,7 @@ class cBot_perp_ftx():
                 symbol,
                 'takeProfit',
                 side,
-                self.convert_amount_to_precision(symbol, amount),
+                self.convert_amount_to_precision(symbol, amount * leverage),
                 None,
                 params
                 )

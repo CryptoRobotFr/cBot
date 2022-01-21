@@ -122,7 +122,7 @@ if len(ftx.get_open_position()) == 0:
 
 else:
     # -- Check if you have a LONG open --
-    if ftx.get_open_position(perpSymbol)[0]['side'] == 'buy':
+    if ftx.get_open_position(perpSymbol)[0]['side'] == 'long':
         # -- Check if you have to close your LONG --
         if closeLongCondition(df.iloc[-2]):
             ftx.close_all_open_position(perpSymbol)
@@ -131,7 +131,7 @@ else:
         else:
             print("A LONG is running and I don't want to stop it")
     # -- Check if you have a SHORT open --
-    elif ftx.get_open_position(perpSymbol)[0]['side'] == 'sell':
+    elif ftx.get_open_position(perpSymbol)[0]['side'] == 'short':
         if closeShortCondition(df.iloc[-2]):
             ftx.close_all_open_position(perpSymbol)
             ftx.cancel_all_open_order(perpSymbol)

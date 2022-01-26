@@ -69,7 +69,7 @@ usdAmount = ftx.get_balance_of_one_coin('USD')
 actualPrice = df.iloc[-1]['close']
 
 # -- Check if you have no position running --
-if len(ftx.get_open_position()) == 0:
+if len(ftx.get_open_position(perpSymbol)) == 0:
     # -- Check if you have to open a LONG --
     if openLongCondition(df.iloc[-2]):
         # -- Cancel all order (stop loss) --

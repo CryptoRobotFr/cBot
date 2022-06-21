@@ -26,11 +26,11 @@ df['STOCH_RSI'] = ta.momentum.stochrsi(close=df['close'], window=14, smooth1=3, 
 
 # -- Condition to open Market LONG --
 def openLongCondition(row):
-    if (row['EMA1'] > row['EMA2'] 
-    and row['EMA2'] > row['EMA3'] 
-    and row['EMA3'] > row['EMA4'] 
-    and row['EMA4'] > row['EMA5'] 
-    and row['EMA5'] > row['EMA6'] 
+    if (row['EMA1'] > row['EMA2']
+    and row['EMA2'] > row['EMA3']
+    and row['EMA3'] > row['EMA4']
+    and row['EMA4'] > row['EMA5']
+    and row['EMA5'] > row['EMA6']
     and row['STOCH_RSI'] < 0.82):
         return True
     else:
@@ -45,11 +45,11 @@ def closeLongCondition(row):
 
 # -- Condition to open Market SHORT --
 def openShortCondition(row):
-    if ( row['EMA6'] > row['EMA5'] 
-    and row['EMA5'] > row['EMA4'] 
-    and row['EMA4'] > row['EMA3'] 
-    and row['EMA3'] > row['EMA2'] 
-    and row['EMA2'] > row['EMA1'] 
+    if ( row['EMA6'] > row['EMA5']
+    and row['EMA5'] > row['EMA4']
+    and row['EMA4'] > row['EMA3']
+    and row['EMA3'] > row['EMA2']
+    and row['EMA2'] > row['EMA1']
     and row['STOCH_RSI'] > 0.2 ):
         return True
     else:
@@ -69,7 +69,7 @@ usdAmount = ftx.get_balance_of_one_coin('USD')
 actualPrice = df.iloc[-1]['close']
 
 # -- Check if you have no position running --
-if len(ftx.get_open_position(perpSymbol)) == 0:
+if len(ftx.get_open_position([perpSymbol])) == 0:
     # -- Check if you have to open a LONG --
     if openLongCondition(df.iloc[-2]):
         # -- Cancel all order (stop loss) --
@@ -78,17 +78,17 @@ if len(ftx.get_open_position(perpSymbol)) == 0:
         quantityMax = float(usdAmount)/actualPrice
         # -- Create a market order Long --
         longOrder = ftx.place_market_order(
-            perpSymbol, 
-            'buy', 
-            quantityMax, 
+            perpSymbol,
+            'buy',
+            quantityMax,
             leverage
         )
         print("Open a market LONG at", actualPrice)
         # -- Create a market stop loss -3% --
         stopLoss = ftx.place_market_stop_loss(
-            perpSymbol, 
-            'sell', 
-            quantityMax, 
+            perpSymbol,
+            'sell',
+            quantityMax,
             actualPrice - 0.03 * actualPrice,
             leverage
         )
@@ -101,17 +101,17 @@ if len(ftx.get_open_position(perpSymbol)) == 0:
         quantityMax = float(usdAmount)/actualPrice
         # -- Create a market order Long --
         shortOrder = ftx.place_market_order(
-            perpSymbol, 
-            'sell', 
-            quantityMax, 
+            perpSymbol,
+            'sell',
+            quantityMax,
             leverage
         )
         print("Open a market SHORT at", actualPrice)
         # -- Create a market stop loss -3% --
         stopLoss = ftx.place_market_stop_loss(
-            perpSymbol, 
-            'buy', 
-            quantityMax, 
+            perpSymbol,
+            'buy',
+            quantityMax,
             actualPrice + 0.03 * actualPrice,
             leverage
         )
@@ -122,18 +122,18 @@ if len(ftx.get_open_position(perpSymbol)) == 0:
 
 else:
     # -- Check if you have a LONG open --
-    if ftx.get_open_position(perpSymbol)[0]['side'] == 'long':
+    if ftx.get_open_position([perpSymbol])[0]['side'] == 'long':
         # -- Check if you have to close your LONG --
         if closeLongCondition(df.iloc[-2]):
-            ftx.close_all_open_position(perpSymbol)
+            ftx.close_all_open_position([perpSymbol])
             ftx.cancel_all_open_order(perpSymbol)
             print('Close my LONG position')
         else:
             print("A LONG is running and I don't want to stop it")
     # -- Check if you have a SHORT open --
-    elif ftx.get_open_position(perpSymbol)[0]['side'] == 'short':
+    elif ftx.get_open_position([perpSymbol])[0]['side'] == 'short':
         if closeShortCondition(df.iloc[-2]):
-            ftx.close_all_open_position(perpSymbol)
+            ftx.close_all_open_position([perpSymbol])
             ftx.cancel_all_open_order(perpSymbol)
             print('Close my SHORT position')
         else:
